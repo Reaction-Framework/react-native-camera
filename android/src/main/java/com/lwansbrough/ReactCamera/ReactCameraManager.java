@@ -1,51 +1,57 @@
-package com.lwansbrough.RCTCamera;
+package com.lwansbrough.ReactCamera;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import android.content.Context;
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.SimpleViewManager;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIProp;
+import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.ViewProps;
+
+import android.hardware.Camera;
+import android.widget.Toast;
+import android.util.Log;
+import javax.annotation.Nullable;
 
 public class ReactCameraManager extends SimpleViewManager<ReactCameraView> {
 
-  public static final String REACT_CLASS = "RCTCamera";
+    public static final String REACT_CLASS = "ReactCameraView";
+    private Camera camera = null;
+    private ThemedReactContext context;
+    private ReactApplicationContext reactApplicationContext;
 
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_SRC = "src";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_BORDER_RADIUS = "borderRadius";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_RESIZE_MODE = ViewProps.RESIZE_MODE;
+    private CameraInstanceManager cameraInstanceManager;
 
-  @Override
-  public String getName() {
-    return REACT_CLASS;
-  }
-  
-  @Override
-  public ReactCameraView createViewInstance(ThemedReactContext context) {
-    return new ReactCameraView(context, Fresco.newDraweeControllerBuilder(), mCallerContext);
-  }
-  
-  @Override
-  public void updateView(final ReactImageView view, final CatalystStylesDiffMap props) {
-    super.updateView(view, props);
+    public ReactCameraManager(CameraInstanceManager cameraInstanceManager) {
+        this.cameraInstanceManager = cameraInstanceManager;
+    }
 
-    if (props.hasKey(PROP_RESIZE_MODE)) {
-      view.setScaleType(
-        ImageResizeMode.toScaleType(props.getString(PROP_RESIZE_MODE)));
+    @Override
+    public String getName() {
+        return REACT_CLASS;
     }
-    if (props.hasKey(PROP_SRC)) {
-       view.setSource(props.getString(PROP_SRC));
+
+    @ReactProp(name = "type")
+    public void setType(ReactCameraView cameraView, @Nullable String type) {
+        Log.v("ReactCameraManager", "setType");
+        cameraView.updateCamera(cameraInstanceManager.getCamera(type));
     }
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(props.getFloat(PROP_BORDER_RADIUS, 0.0f));
+
+    @Override
+    public ReactCameraView createViewInstance(ThemedReactContext context) {
+        ReactCameraView view = new ReactCameraView(context, cameraInstanceManager);
+        this.context = context;
+        return view;
     }
-    view.maybeUpdateView();
-  }
+
+    @Override
+    public void updateView(final ReactCameraView view, final CatalystStylesDiffMap props) {
+        super.updateView(view, props);
+        view.maybeUpdateView();
+    }
 }

@@ -1,0 +1,6 @@
+rootProject.name = 'ReactNativeCameraExample'
+
+include ':app'
+
+include ':com.lwansbrough.ReactCamera'
+project(':com.lwansbrough.ReactCamera').projectDir = new File(settingsDir, '../node_modules/react-native-camera/android')
