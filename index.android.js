@@ -1,20 +1,8 @@
-var React = require('react-native');
-var { requireNativeComponent, PropTypes, NativeModules } = React;
+import React, { requireNativeComponent, PropTypes, NativeModules, View } from 'react-native';
 
-var ReactNativeCameraModule = NativeModules.ReactCameraModule;
-var ReactCameraView = requireNativeComponent('ReactCameraView', {
-    name: 'ReactCameraView',
-    propTypes: {
-        scaleX: PropTypes.number,
-        scaleY: PropTypes.number,
-        translateX: PropTypes.number,
-        translateY: PropTypes.number,
-        rotation: PropTypes.number,
-        type: PropTypes.oneOf(['back', 'front'])
-    }
-});
+const ReactNativeCameraModule = NativeModules.ReactCameraModule;
 
-var constants = {
+const constants = {
     'Aspect': {
         'stretch': 'stretch',
         'fit': 'fit',
@@ -68,7 +56,14 @@ var constants = {
     }
 };
 
-var ReactCameraViewWrapper = React.createClass({
+const viewPropTypes = View.propTypes;
+
+const CameraView = React.createClass({
+
+    propTypes: {
+        ...viewPropTypes,
+        type: PropTypes.oneOf(['back', 'front'])
+    },
 
     getDefaultProps() {
         return ({
@@ -77,13 +72,13 @@ var ReactCameraViewWrapper = React.createClass({
         });
     },
 
-    render () {
+    render() {
         return (
             <ReactCameraView {...this.props}></ReactCameraView>
         );
     },
 
-    capture (options, callback) {
+    capture(options, callback) {
         var component = this;
         var defaultOptions = {
             type: component.props.type,
@@ -93,18 +88,20 @@ var ReactCameraViewWrapper = React.createClass({
             description: ''
         };
         return new Promise(function(resolve, reject) {
-            if (!callback && typeof options === 'function') {
+            if(!callback && typeof options === 'function') {
                 callback = options;
                 options = {};
             }
             ReactNativeCameraModule.capture(Object.assign(defaultOptions, options || {}), function(encoded) {
-                if (typeof callback === 'function') callback(encoded);
+                if(typeof callback === 'function') callback(encoded);
                 resolve(encoded);
             });
         });
     }
 });
 
-ReactCameraViewWrapper.constants = constants;
+const ReactCameraView = requireNativeComponent('ReactCameraView', CameraView);
 
-module.exports = ReactCameraViewWrapper;
+CameraView.constants = constants;
+
+export default CameraView;
