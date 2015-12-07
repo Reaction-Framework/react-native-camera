@@ -6,21 +6,12 @@ const CameraNativeModule = NativeModules.CameraModule;
 const constants = {
     //Aspect: CameraNativeModule.Aspect,
     //BarCodeType: CameraNativeModule.BarCodeType,
-    //Type: CameraNativeModule.Type,
+    Type: CameraNativeModule.Type,
     //CaptureMode: CameraNativeModule.CaptureMode,
-    //CaptureTarget: CameraNativeModule.CaptureTarget,
+    CaptureTarget: CameraNativeModule.CaptureTarget,
     //Orientation: CameraNativeModule.Orientation,
     //FlashMode: CameraNativeModule.FlashMode,
     //TorchMode: CameraNativeModule.TorchMode,
-    Type: {
-        back:1,
-        front:2
-    },
-    CaptureTarget: {
-        memory:0,
-        disc:1,
-        cameraRoll:2
-    }
 };
 
 const viewPropTypes = View.propTypes;
