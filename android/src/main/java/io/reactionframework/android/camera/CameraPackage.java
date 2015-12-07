@@ -1,4 +1,4 @@
-package com.lwansbrough.ReactCamera;
+package io.reactionframework.android.camera;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -11,20 +11,17 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-public class ReactCameraPackage implements ReactPackage {
+public class CameraPackage implements ReactPackage {
+    private CameraInstanceManager mCameraInstanceManager;
 
-    private CameraInstanceManager cameraInstanceManager;
-    private Activity mainActivity;
-
-    public ReactCameraPackage(Activity mainActivity) {
-        this.cameraInstanceManager = new CameraInstanceManager(mainActivity);
-        this.mainActivity = mainActivity;
+    public CameraPackage(Activity mainActivity) {
+        mCameraInstanceManager = new CameraInstanceManager(mainActivity);
     }
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<NativeModule>();
-        modules.add(new ReactCameraModule(reactContext, cameraInstanceManager));
+        modules.add(new CameraModule(reactContext, mCameraInstanceManager));
         return modules;
     }
 
@@ -36,7 +33,7 @@ public class ReactCameraPackage implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         List<ViewManager> viewManagers = new ArrayList<ViewManager>();
-        viewManagers.add(new ReactCameraManager(cameraInstanceManager));
+        viewManagers.add(new CameraViewManager(mCameraInstanceManager));
         return viewManagers;
     }
 }

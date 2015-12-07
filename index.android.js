@@ -1,58 +1,25 @@
 import React, { requireNativeComponent, PropTypes, NativeModules, View } from 'react-native';
 
-const ReactNativeCameraModule = NativeModules.ReactCameraModule;
+const CameraNativeModule = NativeModules.CameraModule;
 
+// TODO
 const constants = {
-    'Aspect': {
-        'stretch': 'stretch',
-        'fit': 'fit',
-        'fill': 'fill'
+    //Aspect: CameraNativeModule.Aspect,
+    //BarCodeType: CameraNativeModule.BarCodeType,
+    //Type: CameraNativeModule.Type,
+    //CaptureMode: CameraNativeModule.CaptureMode,
+    //CaptureTarget: CameraNativeModule.CaptureTarget,
+    //Orientation: CameraNativeModule.Orientation,
+    //FlashMode: CameraNativeModule.FlashMode,
+    //TorchMode: CameraNativeModule.TorchMode,
+    Type: {
+        back:1,
+        front:2
     },
-    'BarCodeType': {
-        'upca': 'upca',
-        'upce': 'upce',
-        'ean8': 'ean8',
-        'ean13': 'ean13',
-        'code39': 'code39',
-        'code93': 'code93',
-        'codabar': 'codabar',
-        'itf': 'itf',
-        'rss14': 'rss14',
-        'rssexpanded': 'rssexpanded',
-        'qr': 'qr',
-        'datamatrix': 'datamatrix',
-        'aztec': 'aztec',
-        'pdf417': 'pdf417'
-    },
-    'Type': {
-        'front': 'front',
-        'back': 'back'
-    },
-    'CaptureMode': {
-        'still': 'still',
-        'video': 'video'
-    },
-    'CaptureTarget': {
-        'memory': 'base64',
-        'disk': 'disk',
-        'cameraRoll': 'gallery'
-    },
-    'Orientation': {
-        'auto': 'auto',
-        'landscapeLeft': 'landscapeLeft',
-        'landscapeRight': 'landscapeRight',
-        'portrait': 'portrait',
-        'portraitUpsideDown': 'portraitUpsideDown'
-    },
-    'FlashMode': {
-        'off': 'off',
-        'on': 'on',
-        'auto': 'auto'
-    },
-    'TorchMode': {
-        'off': 'off',
-        'on': 'on',
-        'auto': 'auto'
+    CaptureTarget: {
+        memory:0,
+        disc:1,
+        cameraRoll:2
     }
 };
 
@@ -62,7 +29,14 @@ const CameraView = React.createClass({
 
     propTypes: {
         ...viewPropTypes,
-        type: PropTypes.oneOf(['back', 'front'])
+        captureTarget: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        type: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ])
     },
 
     getDefaultProps() {
@@ -79,28 +53,22 @@ const CameraView = React.createClass({
     },
 
     capture(options, callback) {
-        var component = this;
-        var defaultOptions = {
-            type: component.props.type,
-            target: component.props.captureTarget,
-            sampleSize: 0,
-            title: '',
-            description: ''
+        if (arguments.length == 1) {
+            callback = options;
+            options = {};
+        }
+
+        let defaultOptions = {
+            type: this.props.type,
+            target: this.props.captureTarget,
+            sampleSize: 0
         };
-        return new Promise(function(resolve, reject) {
-            if(!callback && typeof options === 'function') {
-                callback = options;
-                options = {};
-            }
-            ReactNativeCameraModule.capture(Object.assign(defaultOptions, options || {}), function(encoded) {
-                if(typeof callback === 'function') callback(encoded);
-                resolve(encoded);
-            });
-        });
+
+        CameraNativeModule.capture(Object.assign(defaultOptions, options || {}), callback);
     }
 });
 
-const ReactCameraView = requireNativeComponent('ReactCameraView', CameraView);
+const ReactCameraView = requireNativeComponent('RCTIONCameraView', CameraView);
 
 CameraView.constants = constants;
 
