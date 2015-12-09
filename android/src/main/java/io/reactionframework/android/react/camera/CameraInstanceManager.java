@@ -1,4 +1,4 @@
-package io.reactionframework.android.camera;
+package io.reactionframework.android.react.camera;
 
 import android.app.Activity;
 import android.content.Context;
