@@ -23,7 +23,7 @@ A camera module for React Native.
 include ':io.reactionframework.android.react.camera'
 project(':io.reactionframework.android.react.camera').projectDir = new File(settingsDir, '../node_modules/react-native-camera/android')
 ```
-* add to your `app/build.gradle`:
+* Add to your `app/build.gradle`:
 ```
 dependencies {
 	...
@@ -294,4 +294,4 @@ Thanks to [@lwansbrough](https://github.com/lwansbrough) for original module and
 
 ## Roadmap
 1. Android
-	* add all missing features implemented on iOS
+	* Add all missing features implemented on iOS
