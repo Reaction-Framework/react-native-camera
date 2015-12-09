@@ -290,7 +290,7 @@ This component supports subviews on iOS and Android, so if you wish to use the c
 
 ------------
 
-Thanks to @lwansbrough for original module and to @timmh on first Android implementation. Some credits goes to @boxme and to `SquareCamera` library for Android.
+Thanks to [@lwansbrough](https://github.com/lwansbrough) for original module and to [@timmh](https://github.com/lwansbrough) on first Android implementation. Some credits goes to [@boxme](https://github.com/lwansbrough) and to [SquareCamera](https://github.com/boxme/SquareCamera) library for Android.
 
 ## Roadmap
 1. Android
