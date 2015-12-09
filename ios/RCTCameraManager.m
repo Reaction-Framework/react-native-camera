@@ -14,6 +14,12 @@
 
 RCT_EXPORT_MODULE();
 
+- (UIView *)viewWithProps:(__unused NSDictionary *)props
+{
+    self.presetCamera = ((NSNumber *)props[@"type"]).integerValue;
+    return [self view];
+}
+
 - (UIView *)view
 {
     return [[RCTCamera alloc] initWithManager:self bridge:self.bridge];
@@ -130,10 +136,18 @@ RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL)
 
 RCT_EXPORT_METHOD(checkDeviceAuthorizationStatus:(RCTResponseSenderBlock) callback)
 {
-  NSString *mediaType = AVMediaTypeVideo;
+  __block NSString *mediaType = AVMediaTypeVideo;
 
   [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
-    callback(@[[NSNull null], @(granted)]);
+    if (!granted) {
+      callback(@[[NSNull null], @(granted)]);
+    }
+    else {
+      mediaType = AVMediaTypeAudio;
+      [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
+        callback(@[[NSNull null], @(granted)]);
+      }];
+    }
   }];
 }
 
@@ -709,6 +723,8 @@ didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
     AVCaptureDevice *device = [[self videoCaptureDeviceInput] device];
     if ([device lockForConfiguration:&error]) {
         CGFloat zoomFactor = device.videoZoomFactor + atan(velocity / pinchVelocityDividerFactor);
+        zoomFactor = zoomFactor >= 1 && zoomFactor <= device.activeFormat.videoMaxZoomFactor ? zoomFactor : 1.0f;
+
         NSDictionary *event = @{
                                 @"target": reactTag,
                                 @"zoomFactor": [NSNumber numberWithDouble:zoomFactor],
@@ -716,7 +732,7 @@ didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
                               };
         [self.bridge.eventDispatcher sendInputEventWithName:@"zoomChanged" body:event];
 
-        device.videoZoomFactor = zoomFactor >= 1.0f ? zoomFactor : 1.0f;
+        device.videoZoomFactor = zoomFactor;
         [device unlockForConfiguration];
     } else {
         NSLog(@"error: %@", error);
