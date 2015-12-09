@@ -1,6 +1,7 @@
 package io.reactionframework.android.camera;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -101,6 +102,10 @@ public class CameraView extends RelativeLayout {
         mViewGroupHolder.removeView(child);
     }
 
+    public void updateAspect(int aspect) {
+        mCameraSurface.updateAspect(aspect);
+    }
+
     public void updateCamera(int cameraType) {
         Camera camera = mCameraInstanceManager.getCamera(cameraType);
 
@@ -116,27 +121,34 @@ public class CameraView extends RelativeLayout {
     }
 
     private class CameraSurface extends SurfaceView implements SurfaceHolder.Callback {
+        private int mAspect;
         private int mCameraType;
         private Camera mCamera;
+        private Camera.Size mCameraSize;
 
         public CameraSurface(ThemedReactContext context) {
             super(context);
 
+            mAspect = -1;
             mCameraType = -1;
             mCamera = null;
+            mCameraSize = null;
 
             getHolder().addCallback(this);
         }
 
+        @Override
         public void surfaceCreated(SurfaceHolder holder) {
             Log.v(LOG_TAG, "Surface is created.");
 
             if (mCamera != null) {
                 try {
+                    mCameraSize = mCameraInstanceManager.updateCameraPictureSize(mCamera);
                     mCamera.setPreviewDisplay(getHolder());
                     mCameraInstanceManager.updateCameraOrientation(mCamera);
                     mCameraInstanceManager.getCameraOrientationListener().enable();
                     mCamera.startPreview();
+                    onCameraSurfaceUpdate();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -144,7 +156,7 @@ public class CameraView extends RelativeLayout {
                 return;
             }
 
-            if(mCameraType != -1) {
+            if (mCameraType != -1) {
                 mCamera = mCameraInstanceManager.getCamera(mCameraType);
 
                 if (mCamera == null) {
@@ -157,14 +169,13 @@ public class CameraView extends RelativeLayout {
             }
         }
 
+        @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
             Log.v(LOG_TAG, "Surface is changed.");
-
-            if (mCamera != null) {
-                mCameraInstanceManager.updateCameraOrientation(mCamera);
-            }
+            onCameraSurfaceUpdate();
         }
 
+        @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             Log.v(LOG_TAG, "Surface is destroyed.");
 
@@ -174,6 +185,59 @@ public class CameraView extends RelativeLayout {
                 mCameraInstanceManager.getCameraOrientationListener().disable();
                 mCamera = null;
             }
+        }
+
+        public void updateAspect(int aspect) {
+            if (aspect != mAspect) {
+                mAspect = aspect;
+                onCameraSurfaceUpdate();
+            }
+        }
+
+        private void onCameraSurfaceUpdate() {
+            if (mCamera != null) {
+                mCameraInstanceManager.updateCameraOrientation(mCamera);
+                updatePreviewLayout();
+            }
+        }
+
+        private void updatePreviewLayout() {
+            int width = getMeasuredWidth();
+            int height = getMeasuredHeight();
+
+            if (width <= 0 || height <= 0) {
+                Log.v(LOG_TAG, "Skipping preview layout update.");
+                return;
+            }
+
+            if (mAspect != CameraModule.Aspect.FILL && mAspect != CameraModule.Aspect.FIT) {
+                mCameraSurface.layout(0, 0, width, height);
+                return;
+            }
+
+            int screenOrientation = getContext().getResources().getConfiguration().orientation;
+
+            float cameraWidth = screenOrientation == Configuration.ORIENTATION_LANDSCAPE ? mCameraSize.width : mCameraSize.height;
+            float cameraHeight = screenOrientation == Configuration.ORIENTATION_LANDSCAPE ? mCameraSize.height : mCameraSize.width;
+
+            float scale = 0;
+
+            switch (mAspect) {
+                case CameraModule.Aspect.FILL:
+                    scale = Math.max((float) width / cameraWidth, (float) height / cameraHeight);
+                    break;
+                case CameraModule.Aspect.FIT:
+                    scale = Math.min((float) width / cameraWidth, (float) height / cameraHeight);
+                    break;
+            }
+
+            cameraWidth = cameraWidth * scale;
+            cameraHeight = cameraHeight * scale;
+
+            float cameraX = (float) width / 2f - cameraWidth / 2f;
+            float cameraY = (float) height / 2f - cameraHeight / 2f;
+
+            mCameraSurface.layout((int) cameraX, (int) cameraY, (int) (cameraX + cameraWidth), (int) (cameraY + cameraHeight));
         }
     }
 }

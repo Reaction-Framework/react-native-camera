@@ -42,6 +42,20 @@ public class CameraModule extends ReactContextBaseJavaModule {
         }
     }
 
+    public static class Aspect {
+        public static final int FILL = 0;
+        public static final int FIT = 1;
+        public static final int STRETCH = 2;
+
+        private static Map<String, Object> getValuesMap() {
+            Map<String, Object> valuesMap = new HashMap<>();
+            valuesMap.put("fill", FILL);
+            valuesMap.put("fit", FIT);
+            valuesMap.put("stretch", STRETCH);
+            return valuesMap;
+        }
+    }
+
     private ReactApplicationContext mReactContext;
     private CameraInstanceManager mCameraInstanceManager;
 
@@ -59,8 +73,9 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
     @Override
     public Map<String, Object> getConstants() {
-        final Map<String, Object> constants = new HashMap<String, Object>();
+        final Map<String, Object> constants = new HashMap<>();
 
+        constants.put("Aspect", Aspect.getValuesMap());
         constants.put("CaptureTarget", CaptureTarget.getValuesMap());
         constants.put("Type", Type.getValuesMap());
 

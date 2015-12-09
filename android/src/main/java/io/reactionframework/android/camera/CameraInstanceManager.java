@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 
+import java.util.List;
+
 public class CameraInstanceManager {
     private static final String LOG_TAG = CameraInstanceManager.class.getSimpleName();
 
@@ -66,6 +68,32 @@ public class CameraInstanceManager {
     public int getCameraOrientation() {
         mOrientationListener.saveOrientation();
         return mOrientationListener.mCameraOrientation;
+    }
+
+    public Camera.Size updateCameraPictureSize(Camera camera) {
+        Camera.Parameters parameters = camera.getParameters();
+        List<Camera.Size> sizes = parameters.getSupportedPictureSizes();
+
+        if (sizes == null || sizes.size() <= 0) {
+            return camera.getParameters().getPictureSize();
+        }
+
+        Camera.Size cameraSize = null;
+        for (Camera.Size size : sizes) {
+            if (cameraSize == null) {
+                cameraSize = size;
+                continue;
+            }
+
+            if (cameraSize.width < size.width || cameraSize.height < size.height) {
+                cameraSize = size;
+            }
+        }
+
+        parameters.setPictureSize(cameraSize.width, cameraSize.height);
+        camera.setParameters(parameters);
+
+        return cameraSize;
     }
 
     private int getDisplayOrientation() {
@@ -155,7 +183,7 @@ public class CameraInstanceManager {
                 return 270;
             }
 
-            throw new RuntimeException("The physics as we know them are no more. Watch out for anomalies.");
+            throw new RuntimeException("Unknown camera orientation.");
         }
 
         private void saveOrientation() {

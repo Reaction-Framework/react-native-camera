@@ -55,9 +55,8 @@ class ImageUtils {
             FileOutputStream stream = new FileOutputStream(mediaFile);
             stream.write(out.toByteArray());
             stream.close();
-
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error storing photo to dick!", e);
+            Log.e(LOG_TAG, "Error storing photo to disk.", e);
             e.printStackTrace();
         }
 

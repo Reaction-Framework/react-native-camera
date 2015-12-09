@@ -4,7 +4,7 @@ const CameraNativeModule = NativeModules.CameraModule;
 
 // TODO
 const constants = {
-    //Aspect: CameraNativeModule.Aspect,
+    Aspect: CameraNativeModule.Aspect,
     //BarCodeType: CameraNativeModule.BarCodeType,
     Type: CameraNativeModule.Type,
     //CaptureMode: CameraNativeModule.CaptureMode,
@@ -20,6 +20,10 @@ const CameraView = React.createClass({
 
     propTypes: {
         ...viewPropTypes,
+        aspect: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
         captureTarget: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.number

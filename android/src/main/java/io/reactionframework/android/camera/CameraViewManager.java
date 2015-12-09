@@ -9,6 +9,7 @@ public class CameraViewManager extends ViewGroupManager<CameraView> {
     private static final String LOG_TAG = CameraViewManager.class.getSimpleName();
 
     public static final String REACT_CLASS = "RCTIONCameraView";
+    public static final String PROP_ASPECT = "aspect";
     public static final String PROP_TYPE = "type";
     public static final String PROP_TARGET = "target";
 
@@ -23,9 +24,15 @@ public class CameraViewManager extends ViewGroupManager<CameraView> {
         return REACT_CLASS;
     }
 
+    @ReactProp(name = PROP_ASPECT, defaultInt = CameraModule.Aspect.FILL)
+    public void setAspect(CameraView cameraView, int aspect) {
+        Log.v(LOG_TAG, String.format("Property '%s' changed.", PROP_TYPE));
+        cameraView.updateAspect(aspect);
+    }
+
     @ReactProp(name = PROP_TYPE, defaultInt = CameraModule.Type.BACK)
     public void setType(CameraView cameraView, int type) {
-        Log.v(LOG_TAG, String.format("Property %s changed.", PROP_TYPE));
+        Log.v(LOG_TAG, String.format("Property '%s' changed.", PROP_ASPECT));
         cameraView.updateCamera(type);
     }
 
