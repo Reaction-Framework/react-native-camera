@@ -26,13 +26,13 @@ public class CameraViewManager extends ViewGroupManager<CameraView> {
 
     @ReactProp(name = PROP_ASPECT, defaultInt = CameraModule.Aspect.FILL)
     public void setAspect(CameraView cameraView, int aspect) {
-        Log.v(LOG_TAG, String.format("Property '%s' changed.", PROP_TYPE));
+        Log.v(LOG_TAG, String.format("Property '%s' changed.", PROP_ASPECT));
         cameraView.updateAspect(aspect);
     }
 
     @ReactProp(name = PROP_TYPE, defaultInt = CameraModule.Type.BACK)
     public void setType(CameraView cameraView, int type) {
-        Log.v(LOG_TAG, String.format("Property '%s' changed.", PROP_ASPECT));
+        Log.v(LOG_TAG, String.format("Property '%s' changed.", PROP_TYPE));
         cameraView.updateCamera(type);
     }
 
