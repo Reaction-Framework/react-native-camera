@@ -18,6 +18,11 @@ A camera module for React Native.
 
 ## Android setup 
 
+* Run:
+```
+npm install https://github.com/Reaction-Framework/rction-image-android.git --save
+```
+
 * Add to your `settings.gradle`:
 ```
 include ':io.reactionframework.android.image'
