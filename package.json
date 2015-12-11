@@ -17,7 +17,5 @@
     "code",
     "barcode"
   ],
-  "dependencies": {
-    "image-utils-android": "git+https://github.com/Reaction-Framework/image-utils-android.git"
-  }
+  "dependencies": {}
 }
