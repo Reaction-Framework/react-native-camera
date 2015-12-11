@@ -26,7 +26,7 @@ npm install https://github.com/Reaction-Framework/rction-image-android.git --sav
 * Add to your `settings.gradle`:
 ```
 include ':io.reactionframework.android.image'
-project(':io.reactionframework.android.image').projectDir = new File(settingsDir, '../node_modules/react-native-camera/node_modules/image-utils-android')
+project(':io.reactionframework.android.image').projectDir = new File(settingsDir, '../node_modules/rction-image-android')
 
 include ':io.reactionframework.android.react.camera'
 project(':io.reactionframework.android.react.camera').projectDir = new File(settingsDir, '../node_modules/react-native-camera/android')
