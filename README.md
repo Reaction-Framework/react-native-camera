@@ -20,6 +20,9 @@ A camera module for React Native.
 
 * Add to your `settings.gradle`:
 ```
+include ':io.reactionframework.android.image'
+project(':io.reactionframework.android.image').projectDir = new File(settingsDir, '../node_modules/react-native-camera/node_modules/image-utils-android')
+
 include ':io.reactionframework.android.react.camera'
 project(':io.reactionframework.android.react.camera').projectDir = new File(settingsDir, '../node_modules/react-native-camera/android')
 ```
