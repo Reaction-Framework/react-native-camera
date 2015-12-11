@@ -7,6 +7,7 @@ import android.hardware.Camera.CameraInfo;
 import android.net.Uri;
 import android.util.Log;
 import com.facebook.react.bridge.*;
+import io.reactionframework.android.image.ImageUtils;
 
 import java.util.HashMap;
 import java.util.Map;

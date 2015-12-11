@@ -1,8 +1,8 @@
 {
   "name": "react-native-camera",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/Reaction-Framework/react-native-camera.git"
+    "type": "git",
+    "url": "https://github.com/Reaction-Framework/react-native-camera.git"
   },
   "version": "0.8.0",
   "description": "A Camera component for React Native. Also reads barcodes.",
@@ -16,5 +16,8 @@
     "qr",
     "code",
     "barcode"
-  ]
+  ],
+  "dependencies": {
+    "image-utils-android": "git+https://github.com/Reaction-Framework/image-utils-android.git"
+  }
 }
