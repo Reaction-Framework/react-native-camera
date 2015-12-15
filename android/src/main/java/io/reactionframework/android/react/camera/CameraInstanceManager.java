@@ -42,32 +42,23 @@ public class CameraInstanceManager {
         return mCameraList[(mCurrentCameraId = cameraId)];
     }
 
-    public int getCameraId(Camera camera) {
-        if (mCameraList[0] == camera) {
-            return 0;
-        }
-
-        if (mCameraList[1] == camera) {
-            return 1;
-        }
-
-        Log.e(LOG_TAG, "Could not find id of camera, returning current camera id.");
-
-        return mCurrentCameraId;
-    }
-
     public void updateCameraOrientation(Camera camera) {
         int displayOrientation = getDisplayOrientation();
         camera.setDisplayOrientation(displayOrientation);
 
-        Camera.Parameters cameraParameters = camera.getParameters();
-        cameraParameters.setRotation(displayOrientation);
-        camera.setParameters(cameraParameters);
-    }
+        int cameraOrientation = getCameraOrientation();
+        int cameraId = getCameraId(camera);
+        CameraInfo info = new CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
 
-    public int getCameraOrientation() {
-        mOrientationListener.saveOrientation();
-        return mOrientationListener.mCameraOrientation;
+        int cameraRotation = (info.orientation + cameraOrientation) % 360;
+        if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+            cameraRotation = (info.orientation - cameraOrientation + 360) % 360;
+        }
+
+        Camera.Parameters cameraParameters = camera.getParameters();
+        cameraParameters.setRotation(cameraRotation);
+        camera.setParameters(cameraParameters);
     }
 
     public Camera.Size updateCameraPictureSize(Camera camera) {
@@ -94,6 +85,25 @@ public class CameraInstanceManager {
         camera.setParameters(parameters);
 
         return cameraSize;
+    }
+
+    private int getCameraId(Camera camera) {
+        if (mCameraList[0] == camera) {
+            return 0;
+        }
+
+        if (mCameraList[1] == camera) {
+            return 1;
+        }
+
+        Log.e(LOG_TAG, "Could not find id of camera, returning current camera id.");
+
+        return mCurrentCameraId;
+    }
+
+    private int getCameraOrientation() {
+        mOrientationListener.saveOrientation();
+        return mOrientationListener.mCameraOrientation;
     }
 
     private int getDisplayOrientation() {
