@@ -14,7 +14,6 @@ A camera module for React Native.
 * Go to `node_modules` ➜ `react-native-camera` and add `RCTCamera.xcodeproj`
 * In XCode, in the project navigator, select your project. Add `libRCTCamera.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 * Click `RCTCamera.xcodeproj` in the project navigator and go the `Build Settings` tab. Make sure 'All' is toggled on (instead of 'Basic'). In the `Search Paths` section, look for `Header Search Paths` and make sure it contains both `$(SRCROOT)/../../react-native/React` and `$(SRCROOT)/../../../React` - mark both as `recursive`.
-* Run your project (`Cmd+R`)
 
 ## Android setup 
 
@@ -40,12 +39,13 @@ dependencies {
 ```
 * Add to your `MainActivity.java`:
   * `import io.reactionframework.android.react.camera.CameraPackage;`
-  * in `onCreate`:
+  * in `getPackages`:
   ```
-  mReactInstanceManager = ReactInstanceManager.builder()
-	...
-	.addPackage(new CameraPackage(this))
-	...
+  return Arrays.<ReactPackage>asList(
+          new MainReactPackage(),
+          ...,
+          new CameraPackage(this)
+  );
   ```
 
 ## Usage
@@ -118,7 +118,7 @@ let cameraApp = React.createClass({
         );
     },
     changeAspect() {
-        var state = this.state;
+        const state = this.state;
 
         switch (state.aspect) {
             case Camera.constants.Aspect.fill:
@@ -138,7 +138,7 @@ let cameraApp = React.createClass({
         this.setState(state);
     },
     flipCamera() {
-        var state = this.state;
+        const state = this.state;
         state.cameraType = state.cameraType === Camera.constants.Type.back
             ? Camera.constants.Type.front : Camera.constants.Type.back;
         this.setState(state);
