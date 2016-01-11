@@ -94,12 +94,27 @@ public class CameraView extends RelativeLayout {
 
     @Override
     public void removeView(@NonNull View child) {
-        if (isStaticChild(child)) {
-            super.removeView(child);
-            return;
-        }
-
         mViewGroupHolder.removeView(child);
+    }
+
+    @Override
+    public void removeViewInLayout(@NonNull View view) {
+        mViewGroupHolder.removeViewInLayout(view);
+    }
+
+    @Override
+    public void removeViewsInLayout(int start, int count) {
+        mViewGroupHolder.removeViewsInLayout(start, count);
+    }
+
+    @Override
+    public void removeViewAt(int index) {
+        mViewGroupHolder.removeViewAt(index);
+    }
+
+    @Override
+    public void removeViews(int start, int count) {
+        mViewGroupHolder.removeViews(start, count);
     }
 
     public void updateAspect(int aspect) {
