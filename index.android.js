@@ -47,19 +47,32 @@ const CameraView = React.createClass({
         );
     },
 
-    capture(options, callback) {
+    capture(options, cb) {
+
         if (arguments.length == 1) {
-            callback = options;
+            cb = options;
             options = {};
         }
 
-        let defaultOptions = {
+        options = Object.assign({}, {
             type: this.props.type,
             target: this.props.captureTarget,
             sampleSize: 0
-        };
+        }, options);
 
-        CameraNativeModule.capture(Object.assign(defaultOptions, options || {}), callback);
+        if (typeof options.aspect === 'string') {
+            options.aspect = constants.Aspect[options.aspect];
+        }
+
+        if (typeof options.target === 'string') {
+            options.target = constants.CaptureTarget[options.target];
+        }
+
+        if (typeof options.type === 'string') {
+            options.type = constants.Type[options.type];
+        }
+
+        CameraNativeModule.capture(options, cb);
     }
 });
 

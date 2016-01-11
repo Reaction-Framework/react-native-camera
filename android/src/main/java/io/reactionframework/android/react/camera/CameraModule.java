@@ -15,13 +15,13 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
     public static class CaptureTarget {
         public static final int MEMORY = 0;
-        public static final int DISC = 1;
+        public static final int DISK = 1;
         public static final int CAMERA_ROLL = 2;
 
         private static Map<String, Object> getValuesMap() {
             Map<String, Object> valuesMap = new HashMap<>();
             valuesMap.put("memory", MEMORY);
-            valuesMap.put("disc", DISC);
+            valuesMap.put("disk", DISK);
             valuesMap.put("cameraRoll", CAMERA_ROLL);
             return valuesMap;
         }
@@ -112,7 +112,7 @@ public class CameraModule extends ReactContextBaseJavaModule {
             if (target == CaptureTarget.CAMERA_ROLL) {
                 uri = ImageUtils.storeInCameraRoll(mReactContext, data);
             } else {
-                uri = ImageUtils.storeInPictures(mReactContext, data);
+                uri = ImageUtils.storeInAppFiles(mReactContext, data);
             }
 
             if (uri == null) {
