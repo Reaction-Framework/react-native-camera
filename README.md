@@ -21,7 +21,6 @@ A camera module for React Native.
 ```
 npm install https://github.com/Reaction-Framework/rction-image-android.git --save
 ```
-
 * Add to your `settings.gradle`:
 ```
 include ':io.reactionframework.android.image'
@@ -194,7 +193,6 @@ This property allows you to specify the target output of the captured image data
 Values: `Camera.constants.Type.front` or `"front"`, `Camera.constants.Type.back` or `"back"` (default)
 
 Use the `type` property to specify which camera to use.
-
 
 #### `orientation` (iOS)
 
