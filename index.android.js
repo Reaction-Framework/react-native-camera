@@ -95,9 +95,9 @@ const styles = StyleSheet.create({
 });
 
 CameraView.constants = constants;
-CameraView.checkVideoPermission = () => null;
-CameraView.requestVideoPermission = () => null;
-CameraView.checkAudioPermission = () => null;
-CameraView.requestAudioPermission = () => null;
+CameraView.checkVideoPermission = async () => null;
+CameraView.requestVideoPermission = async () => null;
+CameraView.checkAudioPermission = async () => null;
+CameraView.requestAudioPermission = async () => null;
 
 export default CameraView;
