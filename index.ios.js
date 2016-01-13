@@ -1,204 +1,198 @@
-var React = require('react-native');
-var { StyleSheet, requireNativeComponent, PropTypes, NativeModules, DeviceEventEmitter } = React;
+import React, {
+    StyleSheet,
+    requireNativeComponent,
+    PropTypes,
+    NativeModules,
+    DeviceEventEmitter } from 'react-native';
 
-var CAMERA_REF = 'camera';
+const CameraNativeModule = NativeModules.IONCameraManager;
 
-var constants = {
-  Aspect: NativeModules.CameraManager.Aspect,
-  BarCodeType: NativeModules.CameraManager.BarCodeType,
-  Type: NativeModules.CameraManager.Type,
-  CaptureMode: NativeModules.CameraManager.CaptureMode,
-  CaptureTarget: NativeModules.CameraManager.CaptureTarget,
-  Orientation: NativeModules.CameraManager.Orientation,
-  FlashMode: NativeModules.CameraManager.FlashMode,
-  TorchMode: NativeModules.CameraManager.TorchMode
+const constants = {
+    Aspect: CameraNativeModule.Aspect,
+    BarCodeType: CameraNativeModule.BarCodeType,
+    Type: CameraNativeModule.Type,
+    CaptureMode: CameraNativeModule.CaptureMode,
+    CaptureTarget: CameraNativeModule.CaptureTarget,
+    Orientation: CameraNativeModule.Orientation,
+    FlashMode: CameraNativeModule.FlashMode,
+    TorchMode: CameraNativeModule.TorchMode
 };
 
-var Camera = React.createClass({
-  propTypes: {
-    aspect: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    captureAudio: PropTypes.bool,
-    captureMode: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    captureTarget: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    type: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    orientation: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    flashMode: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    torchMode: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]),
-    defaultOnFocusComponent: PropTypes.bool,
-    onFocusChanged: PropTypes.func,
-    onZoomChanged: PropTypes.func
-  },
+const CAMERA_REF = 'camera';
 
-  setNativeProps(props) {
-    this.refs[CAMERA_REF].setNativeProps(props);
-  },
+const CameraView = React.createClass({
 
-  getDefaultProps() {
-    return {
-      aspect: constants.Aspect.fill,
-      type: constants.Type.back,
-      orientation: constants.Orientation.auto,
-      captureAudio: true,
-      captureMode: constants.CaptureMode.still,
-      captureTarget: constants.CaptureTarget.cameraRoll,
-      flashMode: constants.FlashMode.off,
-      torchMode: constants.TorchMode.off
-    };
-  },
+    propTypes: {
+        aspect: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        captureAudio: PropTypes.bool,
+        captureMode: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        captureTarget: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        type: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        orientation: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        flashMode: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        torchMode: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
+        defaultOnFocusComponent: PropTypes.bool,
+        onFocusChanged: PropTypes.func,
+        onZoomChanged: PropTypes.func
+    },
 
-  getInitialState() {
-    return {
-      isAuthorized: false,
-      isRecording: false
-    };
-  },
+    setNativeProps(props) {
+        this.refs[CAMERA_REF].setNativeProps(props);
+    },
 
-  componentWillMount() {
-    NativeModules.CameraManager.checkDeviceAuthorizationStatus((function(err, isAuthorized) {
-      this.state.isAuthorized = isAuthorized;
-      this.setState(this.state);
-    }).bind(this));
-    this.cameraBarCodeReadListener = DeviceEventEmitter.addListener('CameraBarCodeRead', this._onBarCodeRead);
-  },
+    getDefaultProps() {
+        return {
+            aspect: constants.Aspect.fill,
+            type: constants.Type.back,
+            orientation: constants.Orientation.auto,
+            captureAudio: true,
+            captureMode: constants.CaptureMode.still,
+            captureTarget: constants.CaptureTarget.cameraRoll,
+            flashMode: constants.FlashMode.off,
+            torchMode: constants.TorchMode.off
+        };
+    },
 
-  componentWillUnmount() {
-    this.cameraBarCodeReadListener.remove();
+    getInitialState() {
+        return {
+            isRecording: false
+        };
+    },
 
-    if (this.state.isRecording) {
-      this.stopCapture();
+    async componentWillMount() {
+        try {
+            await CameraView.requestVideoPermission();
+        } catch (error) { }
+
+        this.cameraBarCodeReadListener = DeviceEventEmitter.addListener('CameraBarCodeRead', this._onBarCodeRead);
+    },
+
+    componentWillUnmount() {
+        this.cameraBarCodeReadListener.remove();
+
+        if (this.state.isRecording) {
+            this.stopCapture();
+        }
+    },
+
+    render() {
+        const style = [styles.base, this.props.style];
+
+        let aspect = this.props.aspect;
+        let type = this.props.type;
+        let orientation = this.props.orientation;
+        let flashMode = this.props.flashMode;
+        let torchMode = this.props.torchMode;
+
+        if (typeof aspect === 'string') {
+            aspect = constants.Aspect[aspect];
+        }
+
+        if (typeof flashMode === 'string') {
+            flashMode = constants.FlashMode[flashMode];
+        }
+
+        if (typeof orientation === 'string') {
+            orientation = constants.Orientation[orientation];
+        }
+
+        if (typeof torchMode === 'string') {
+            torchMode = constants.TorchMode[torchMode];
+        }
+
+        if (typeof type === 'string') {
+            type = constants.Type[type];
+        }
+
+        const nativeProps = Object.assign({}, this.props, {
+            style,
+            aspect: aspect,
+            type: type,
+            orientation: orientation,
+            flashMode: flashMode,
+            torchMode: torchMode
+        });
+
+        return <ReactCameraView ref={CAMERA_REF} {...nativeProps} />;
+    },
+
+    _onBarCodeRead(e) {
+        if (this.props.onBarCodeRead) {
+            this.props.onBarCodeRead(e);
+        }
+    },
+
+    async capture(options) {
+        options = Object.assign({}, {
+            audio: this.props.captureAudio,
+            mode: this.props.captureMode,
+            target: this.props.captureTarget
+        }, options);
+
+        if (typeof options.mode === 'string') {
+            options.mode = constants.CaptureMode[options.mode];
+        }
+
+        if (options.mode === constants.CaptureMode.video) {
+            options.totalSeconds = (options.totalSeconds > -1 ? options.totalSeconds : -1);
+            options.preferredTimeScale = options.preferredTimeScale || 30;
+
+            if (options.audio) {
+                try {
+                    await CameraView.requestAudioPermission();
+                } catch (error) { }
+            }
+
+            this.setState({ isRecording: true });
+        }
+
+        if (typeof options.target === 'string') {
+            options.target = constants.CaptureTarget[options.target];
+        }
+
+        return CameraNativeModule.capture(options);
+    },
+
+    stopCapture() {
+        if (this.state.isRecording) {
+            CameraNativeModule.stopCapture();
+            this.setState({ isRecording: false });
+        }
     }
-  },
-
-  render() {
-    var style = [styles.base, this.props.style];
-
-    var aspect = this.props.aspect,
-        type = this.props.type,
-        orientation = this.props.orientation,
-        flashMode = this.props.flashMode,
-        torchMode = this.props.torchMode;
-
-    var legacyProps = {
-      aspect: {
-        Fill: 'fill',
-        Fit: 'fit',
-        Stretch: 'stretch'
-      },
-      orientation: {
-        LandscapeLeft: 'landscapeLeft',
-        LandscapeRight: 'landscapeRight',
-        Portrait: 'portrait',
-        PortraitUpsideDown: 'portraitUpsideDown'
-      },
-      type: {
-        Front: 'front',
-        Back: 'back'
-      }
-    };
-
-    if (typeof aspect === 'string') {
-      aspect = constants.Aspect[aspect];
-    }
-
-    if (typeof flashMode === 'string') {
-      flashMode = constants.FlashMode[flashMode];
-    }
-
-    if (typeof orientation === 'string') {
-      orientation = constants.Orientation[orientation];
-    }
-
-    if (typeof torchMode === 'string') {
-      torchMode = constants.TorchMode[torchMode];
-    }
-
-    if (typeof type === 'string') {
-      type = constants.Type[type];
-    }
-
-    var nativeProps = Object.assign({}, this.props, {
-      style,
-      aspect: aspect,
-      type: type,
-      orientation: orientation,
-      flashMode: flashMode,
-      torchMode: torchMode
-    });
-
-    return <RCTCamera ref={CAMERA_REF} {... nativeProps} />;
-  },
-
-  _onBarCodeRead(e) {
-    this.props.onBarCodeRead && this.props.onBarCodeRead(e);
-  },
-
-  capture(options, cb) {
-
-    if (arguments.length == 1) {
-      cb = options;
-      options = {};
-    }
-
-    options = Object.assign({}, {
-      audio: this.props.captureAudio,
-      mode: this.props.captureMode,
-      target: this.props.captureTarget
-    }, options);
-
-    if (typeof options.mode === 'string') {
-      options.mode = constants.CaptureMode[options.mode];
-    }
-
-    if (options.mode === constants.CaptureMode.video) {
-      options.totalSeconds = (options.totalSeconds > -1 ? options.totalSeconds : -1);
-      options.preferredTimeScale = options.preferredTimeScale || 30;
-      this.setState({ isRecording: true });
-    }
-
-    if (typeof options.target === 'string') {
-      options.target = constants.CaptureTarget[options.target];
-    }
-
-    NativeModules.CameraManager.capture(options, cb);
-  },
-
-  stopCapture() {
-    if (this.state.isRecording) {
-      NativeModules.CameraManager.stopCapture();
-      this.setState({ isRecording: false });
-    }
-  }
 
 });
 
-var RCTCamera = requireNativeComponent('RCTCamera', Camera);
+const ReactCameraView = requireNativeComponent('RCTIONCamera', CameraView);
 
-var styles = StyleSheet.create({
-  base: { },
+const styles = StyleSheet.create({
+    base: { },
 });
 
-Camera.constants = constants;
-Camera.checkDeviceAuthorizationStatus = NativeModules.CameraManager.checkDeviceAuthorizationStatus
+CameraView.constants = constants;
+CameraView.checkVideoPermission = CameraNativeModule.checkVideoPermission
+CameraView.requestVideoPermission = CameraNativeModule.requestVideoPermission
+CameraView.checkAudioPermission = CameraNativeModule.checkAudioPermission
+CameraView.requestAudioPermission = CameraNativeModule.requestAudioPermission
 
-module.exports = Camera;
+module.exports = CameraView;

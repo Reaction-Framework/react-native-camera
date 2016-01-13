@@ -79,31 +79,31 @@ public class CameraModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void capture(ReadableMap options, final Callback callback) {
+    public void capture(ReadableMap options, Promise promise) {
         Camera camera = mCameraInstanceManager.getCamera(options.getInt(CameraViewManager.PROP_TYPE));
         mCameraInstanceManager.updateCameraOrientation(camera);
-        camera.takePicture(null, null, new PictureTakenCallback(options, callback, mReactContext));
+        camera.takePicture(null, null, new PictureTakenCallback(options, promise, mReactContext));
     }
 
     private class PictureTakenCallback implements Camera.PictureCallback {
-        ReadableMap options;
-        Callback callback;
-        ReactApplicationContext reactContext;
+        private ReadableMap mOptions;
+        private Promise mPromise;
+        private ReactApplicationContext mReactContext;
 
-        PictureTakenCallback(ReadableMap options, Callback callback, ReactApplicationContext reactContext) {
-            this.options = options;
-            this.callback = callback;
-            this.reactContext = reactContext;
+        PictureTakenCallback(ReadableMap options, Promise promise, ReactApplicationContext reactContext) {
+            this.mOptions = options;
+            this.mPromise = promise;
+            this.mReactContext = reactContext;
         }
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             camera.startPreview();
 
-            int target = options.getInt(CameraViewManager.PROP_TARGET);
+            int target = mOptions.getInt(CameraViewManager.PROP_TARGET);
             if (target == CaptureTarget.MEMORY) {
                 String imageString = ImageUtils.dataToBase64String(data);
-                callback.invoke(null, imageString);
+                mPromise.resolve(imageString);
                 return;
             }
 
@@ -117,10 +117,11 @@ public class CameraModule extends ReactContextBaseJavaModule {
 
             if (uri == null) {
                 Log.e(LOG_TAG, "Photo is not saved.");
+                mPromise.reject("Photo could not be saved!");
                 return;
             }
 
-            callback.invoke(null, uri.getPath());
+            mPromise.resolve(uri.getPath());
         }
     }
 }

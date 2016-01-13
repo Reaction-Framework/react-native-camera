@@ -1,18 +1,19 @@
-import React, { requireNativeComponent, PropTypes, NativeModules, View } from 'react-native';
+import React, {
+    requireNativeComponent,
+    PropTypes,
+    NativeModules,
+    StyleSheet,
+    View } from 'react-native';
 
 const CameraNativeModule = NativeModules.CameraModule;
 
-// TODO
 const constants = {
     Aspect: CameraNativeModule.Aspect,
-    //BarCodeType: CameraNativeModule.BarCodeType,
     Type: CameraNativeModule.Type,
-    //CaptureMode: CameraNativeModule.CaptureMode,
-    CaptureTarget: CameraNativeModule.CaptureTarget,
-    //Orientation: CameraNativeModule.Orientation,
-    //FlashMode: CameraNativeModule.FlashMode,
-    //TorchMode: CameraNativeModule.TorchMode,
+    CaptureTarget: CameraNativeModule.CaptureTarget
 };
+
+const CAMERA_REF = 'camera';
 
 const viewPropTypes = View.propTypes;
 
@@ -34,35 +35,46 @@ const CameraView = React.createClass({
         ])
     },
 
+    setNativeProps(props) {
+        this.refs[CAMERA_REF].setNativeProps(props);
+    },
+
     getDefaultProps() {
         return ({
+            aspect: constants.Aspect.fill,
             type: constants.Type.back,
             captureTarget: constants.CaptureTarget.cameraRoll
         });
     },
 
     render() {
-        return (
-            <ReactCameraView {...this.props}></ReactCameraView>
-        );
+        const style = [styles.base, this.props.style];
+
+        let aspect = this.props.aspect;
+        let type = this.props.type;
+
+        if (typeof aspect === 'string') {
+            aspect = constants.Aspect[aspect];
+        }
+
+        if (typeof type === 'string') {
+            type = constants.Type[type];
+        }
+
+        const nativeProps = Object.assign({}, this.props, {
+            style,
+            aspect: aspect,
+            type: type
+        });
+
+        return <ReactCameraView ref={CAMERA_REF} {...nativeProps} />;
     },
 
-    capture(options, cb) {
-
-        if (arguments.length == 1) {
-            cb = options;
-            options = {};
-        }
-
+    async capture(options) {
         options = Object.assign({}, {
             type: this.props.type,
-            target: this.props.captureTarget,
-            sampleSize: 0
+            target: this.props.captureTarget
         }, options);
-
-        if (typeof options.aspect === 'string') {
-            options.aspect = constants.Aspect[options.aspect];
-        }
 
         if (typeof options.target === 'string') {
             options.target = constants.CaptureTarget[options.target];
@@ -72,12 +84,20 @@ const CameraView = React.createClass({
             options.type = constants.Type[options.type];
         }
 
-        CameraNativeModule.capture(options, cb);
+        return CameraNativeModule.capture(options);
     }
 });
 
 const ReactCameraView = requireNativeComponent('RCTIONCameraView', CameraView);
 
+const styles = StyleSheet.create({
+    base: { },
+});
+
 CameraView.constants = constants;
+CameraView.checkVideoPermission = () => null;
+CameraView.requestVideoPermission = () => null;
+CameraView.checkAudioPermission = () => null;
+CameraView.requestAudioPermission = () => null;
 
 export default CameraView;

@@ -1,6 +1,6 @@
 //
 //  NSMutableDictionary+ImageMetadata.m
-//  RCTCamera
+//  RCTIONCamera
 //
 //  Created by Jehan Tremback on 7/10/15.
 //
@@ -10,7 +10,9 @@
 #import <ImageIO/ImageIO.h>
 
 @interface NSMutableDictionary(ImageMetadata)
+
 - (void)mergeMetadata:(NSDictionary *)inputMetadata;
+
 @end
 
 @implementation NSMutableDictionary(ImageMetadata)

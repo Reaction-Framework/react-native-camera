@@ -1,6 +1,6 @@
 #import "RCTBridge.h"
-#import "RCTCamera.h"
-#import "RCTCameraManager.h"
+#import "RCTIONCameraView.h"
+#import "RCTIONCameraManager.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "RCTEventDispatcher.h"
@@ -8,9 +8,9 @@
 #import "UIView+React.h"
 
 #import <AVFoundation/AVFoundation.h>
-#import "CameraFocusSquare.h"
+#import "RCTIONCameraFocusSquare.h"
 
-@implementation RCTCamera
+@implementation RCTIONCameraView
 {
   BOOL _multipleTouches;
   BOOL _onFocusChanged;
@@ -23,13 +23,13 @@
   NSString *aspectString;
   switch (aspect) {
     default:
-    case RCTCameraAspectFill:
+    case RCTIONCameraAspectFill:
       aspectString = AVLayerVideoGravityResizeAspectFill;
       break;
-    case RCTCameraAspectFit:
+    case RCTIONCameraAspectFit:
       aspectString = AVLayerVideoGravityResizeAspect;
       break;
-    case RCTCameraAspectStretch:
+    case RCTIONCameraAspectStretch:
       aspectString = AVLayerVideoGravityResize;
       break;
   }
@@ -49,12 +49,17 @@
 
 - (void)setOrientation:(NSInteger)orientation
 {
-  if (orientation == RCTCameraOrientationAuto) {
+  if (orientation == RCTIONCameraOrientationAuto) {
     [self.manager changeOrientation:[UIApplication sharedApplication].statusBarOrientation];
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification  object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
   }
   else {
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self
+                                                   name:UIDeviceOrientationDidChangeNotification
+                                                 object:nil];
     [self.manager changeOrientation:orientation];
   }
 }
@@ -90,13 +95,15 @@
   }
 }
 
-- (id)initWithManager:(RCTCameraManager*)manager bridge:(RCTBridge *)bridge
+- (id)initWithManager:(RCTIONCameraManager *)manager
+               bridge:(RCTBridge *)bridge
 {
   
   if ((self = [super init])) {
     self.manager = manager;
     self.bridge = bridge;
-    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchToZoomRecognizer:)];
+    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self
+                                                                                       action:@selector(handlePinchToZoomRecognizer:)];
     [self addGestureRecognizer:pinchGesture];
     [self.manager initializeCaptureSessionInput:AVMediaTypeVideo];
     [self.manager startSession];
@@ -113,10 +120,12 @@
   [super layoutSubviews];
   self.manager.previewLayer.frame = self.bounds;
   [self setBackgroundColor:[UIColor blackColor]];
-  [self.layer insertSublayer:self.manager.previewLayer atIndex:0];
+  [self.layer insertSublayer:self.manager.previewLayer
+                     atIndex:0];
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(UIView *)view
+                   atIndex:(NSInteger)atIndex
 {
   [self insertSubview:view atIndex:atIndex + 1];
   return;
@@ -132,7 +141,9 @@
 {
   [self.manager stopSession];
   [super removeFromSuperview];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:UIDeviceOrientationDidChangeNotification
+                                                object:nil];
 }
 
 - (void)orientationChanged:(NSNotification *)notification{
@@ -141,7 +152,8 @@
 }
 
 
-- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+- (void) touchesBegan:(NSSet *)touches
+            withEvent:(UIEvent *)event
 {
     // Update the touch state.
     if ([[event touchesForView:self] count] > 1) {
@@ -150,7 +162,8 @@
 
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet *)touches
+           withEvent:(UIEvent *)event
 {
     if (!_onFocusChanged) return;
 
@@ -167,6 +180,7 @@
         {
             [self.camFocus removeFromSuperview];
         }
+        
         NSDictionary *event = @{
           @"target": self.reactTag,
           @"touchPoint": @{
@@ -174,11 +188,13 @@
             @"y": [NSNumber numberWithDouble:touchPoint.y]
           }
         };
-        [self.bridge.eventDispatcher sendInputEventWithName:@"focusChanged" body:event];
+        
+        [self.bridge.eventDispatcher sendInputEventWithName:@"focusChanged"
+                                                       body:event];
 
         // Show animated rectangle on the touched area
         if (_defaultOnFocusComponent) {
-            self.camFocus = [[RCTCameraFocusSquare alloc]initWithFrame:CGRectMake(touchPoint.x-40, touchPoint.y-40, 80, 80)];
+            self.camFocus = [[RCTIONCameraFocusSquare alloc]initWithFrame:CGRectMake(touchPoint.x-40, touchPoint.y-40, 80, 80)];
             [self.camFocus setBackgroundColor:[UIColor clearColor]];
             [self addSubview:self.camFocus];
             [self.camFocus setNeedsDisplay];
@@ -197,11 +213,12 @@
 }
 
 
--(void) handlePinchToZoomRecognizer:(UIPinchGestureRecognizer*)pinchRecognizer {
+-(void) handlePinchToZoomRecognizer:(UIPinchGestureRecognizer *)pinchRecognizer {
     if (!_onZoomChanged) return;
 
     if (pinchRecognizer.state == UIGestureRecognizerStateChanged) {
-        [self.manager zoom:pinchRecognizer.velocity reactTag:self.reactTag];
+        [self.manager zoom:pinchRecognizer.velocity
+                  reactTag:self.reactTag];
     }
 }
 
