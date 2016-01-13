@@ -11,9 +11,9 @@ A camera module for React Native.
 ## iPhone setup 
 
 * In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-* Go to `node_modules` ➜ `react-native-camera` and add `RCTCamera.xcodeproj`
-* In XCode, in the project navigator, select your project. Add `libRCTCamera.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-* Click `RCTCamera.xcodeproj` in the project navigator and go the `Build Settings` tab. Make sure 'All' is toggled on (instead of 'Basic'). In the `Search Paths` section, look for `Header Search Paths` and make sure it contains both `$(SRCROOT)/../../react-native/React` and `$(SRCROOT)/../../../React` - mark both as `recursive`.
+* Go to `node_modules` ➜ `react-native-camera` and add `RCTIONCamera.xcodeproj`
+* In XCode, in the project navigator, select your project. Add `libRCTIONCamera.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
+* Click `RCTIONCamera.xcodeproj` in the project navigator and go the `Build Settings` tab. Make sure 'All' is toggled on (instead of 'Basic'). In the `Search Paths` section, look for `Header Search Paths` and make sure it contains both `$(SRCROOT)/../../react-native/React` and `$(SRCROOT)/../../../React` - mark both as `recursive`.
 
 ## Android setup 
 
@@ -56,10 +56,15 @@ All you need is to `require` the `react-native-camera` module and then use the
 ```javascript
 'use strict';
 
-import React, { AppRegistry, StyleSheet, Image, TouchableHighlight, Text } from 'react-native';
+import React, {
+    AppRegistry,
+    StyleSheet,
+    Image,
+    TouchableHighlight,
+    Text } from 'react-native';
 import Camera from 'react-native-camera';
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
@@ -87,7 +92,7 @@ let styles = StyleSheet.create({
     }
 });
 
-let cameraApp = React.createClass({
+const cameraApp = React.createClass({
     getInitialState() {
         return {
             cameraType: Camera.constants.Type.back,
@@ -117,7 +122,7 @@ let cameraApp = React.createClass({
             </Camera>
         );
     },
-    changeAspect() {
+    async changeAspect() {
         const state = this.state;
 
         switch (state.aspect) {
@@ -143,10 +148,13 @@ let cameraApp = React.createClass({
             ? Camera.constants.Type.front : Camera.constants.Type.back;
         this.setState(state);
     },
-    takePicture() {
-        this.refs.cam.capture(function(err, data) {
-            console.log(err, data);
-        });
+    async takePicture() {
+        try {
+            let result = await this.refs.cam.capture();
+            console.log(result);
+        } catch(error) {
+            console.log(error);
+        }
     }
 });
 
@@ -169,7 +177,6 @@ Values: `true` (default), `false` (Boolean)
 
 *Applies to video capture mode only.* Specifies whether or not audio should be captured with the video.
 
-
 #### `captureMode` (iOS)
 
 Values: `Camera.constants.CaptureMode.still` (default), `Camera.constants.CaptureMode.video`
@@ -178,10 +185,9 @@ The type of capture that will be performed by the camera - either a still image 
 
 #### `captureTarget` (iOS; Android)
 
-Values: `Camera.constants.CaptureTarget.cameraRoll` (default), `Camera.constants.CaptureTarget.disk`, ~~`Camera.constants.CaptureTarget.memory`~~ (deprecated),
+Values: `Camera.constants.CaptureTarget.cameraRoll` (default), `Camera.constants.CaptureTarget.disk`, `Camera.constants.CaptureTarget.memory`,
 
-This property allows you to specify the target output of the captured image data. By default the image binary is sent back as a base 64 encoded string. The disk output has been shown to improve capture response time, so that is the recommended value.
-
+This property allows you to specify the target output of the captured image data. Target output can be camera roll (cameraRoll), application private directory (disk) or base 64 encoded string (memory).
 
 #### `type` (iOS; Android)
 
@@ -272,11 +278,9 @@ Args:
 Will call when focus has changed.
 By default, `onZoomChanged` is not defined and pinch-to-zoom is disabled.
 
-## Component methods
+## Methods
 
-You can access component methods by adding a `ref` (ie. `ref="camera"`) prop to your `<Camera>` element, then you can use `this.refs.camera.capture(cb)`, etc. inside your component.
-
-#### `capture([options,] callback)` (iOS; Android)
+#### `async capture([options])` (iOS; Android)
 
 Captures data from the camera. What is captured is based on the `captureMode` and `captureTarget` props. `captureMode` tells the camera whether you want a still image or video. `captureTarget` allows you to specify how you want the data to be captured and sent back to you. See `captureTarget` under Properties to see the available values.
 
@@ -285,6 +289,7 @@ Supported options:
  - `audio` (See `captureAudio` under Properties) *(iOS)*
  - `mode` (See  `captureMode` under Properties) *(iOS)*
  - `target` (See `captureTarget` under Properties) *(iOS; Android)*
+ - `type` (See `type` under Properties) *(Android)*
  - `metadata` This is metadata to be added to the captured image. *(iOS)*
    - `location` This is the object returned from `navigator.geolocation.getCurrentPosition()` (React Native's geolocation polyfill). It will add GPS metadata to the image.
  - `rotation` This will rotate the image by the number of degrees specified. *(iOS)*
@@ -293,9 +298,21 @@ Supported options:
 
 Ends the current capture session for video captures. Only applies when the current `captureMode` is `video`.
 
-#### `checkDeviceAuthorizationStatus(callback(err, isAuthorized))` (iOS)
+#### `static async checkVideoPermission()` (iOS; Android)
 
-Exposes the native API for checking if the device has authorized access to the camera. Can be used to call before loading the Camera component to ensure proper UX.
+Exposes the native API for checking if the device has authorized access to the camera. Can be called before loading the Camera component to ensure proper UX. If application is not authorized exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
+
+#### `static async requestVideoPermission()` (iOS; Android)
+
+Exposes the native API for requesting access to the camera. If access is denied exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
+
+#### `static async checkAudioPermission()` (iOS; Android)
+
+Exposes the native API for checking if the device has authorized access to the microphone. Can be called before video capturing to ensure proper UX. If application is not authorized exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
+
+#### `static async requestAudioPermission()` (iOS; Android)
+
+Exposes the native API for requesting access to the microphone. If access is denied exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
 
 ## Subviews
 This component supports subviews on iOS and Android, so if you wish to use the camera view as a background or if you want to layout buttons/images/etc. inside the camera then you can do that.
