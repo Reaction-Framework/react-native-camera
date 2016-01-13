@@ -5,7 +5,7 @@ import React, {
     StyleSheet,
     View } from 'react-native';
 
-const CameraNativeModule = NativeModules.CameraModule;
+const CameraNativeModule = NativeModules.IONCameraModule;
 
 const constants = {
     Aspect: CameraNativeModule.Aspect,

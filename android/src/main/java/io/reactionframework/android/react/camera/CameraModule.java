@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class CameraModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = CameraModule.class.getSimpleName();
-    private static final String REACT_MODULE = "CameraModule";
+    private static final String REACT_MODULE = "RCTIONCameraModule";
 
     public static class CaptureTarget {
         public static final int MEMORY = 0;
