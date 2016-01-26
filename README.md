@@ -296,9 +296,9 @@ Supported options:
 
 Ends the current capture session for video captures. Only applies when the current `captureMode` is `video`.
 
-#### `static async checkVideoPermission()` (iOS; Android)
+#### `static async getVideoPermissionStatus()` (iOS; Android)
 
-Exposes the native API for checking if the device has authorized access to the camera. Can be called before loading the Camera component to ensure proper UX. If application is not authorized exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
+Exposes the native API for checking if the device has authorized access to the camera. Can be called before rendering the Camera component to ensure proper UX. Resolves with `Camera.constants.PermissionStatus.authorized` if access is authorized, `Camera.constants.PermissionStatus.denied` if access is denied or `Camera.constants.PermissionStatus.notDetermined` if permission is still undetermined.
 
 #### `static async requestVideoPermission()` (iOS; Android)
 
@@ -306,7 +306,7 @@ Exposes the native API for requesting access to the camera. If access is denied 
 
 #### `static async checkAudioPermission()` (iOS; Android)
 
-Exposes the native API for checking if the device has authorized access to the microphone. Can be called before video capturing to ensure proper UX. If application is not authorized exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
+Exposes the native API for checking if the device has authorized access to the microphone. Can be called before video capturing to ensure proper UX.  Resolves with `Camera.constants.PermissionStatus.authorized` if access is authorized, `Camera.constants.PermissionStatus.denied` if access is denied or `Camera.constants.PermissionStatus.notDetermined` if permission is still undetermined.
 
 #### `static async requestAudioPermission()` (iOS; Android)
 
