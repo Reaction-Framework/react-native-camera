@@ -304,7 +304,7 @@ Exposes the native API for checking if the device has authorized access to the c
 
 Exposes the native API for requesting access to the camera. If access is denied exception will be thrown (Promise will reject). Otherwise call will pass without exception, and with no result returned (Promise will resolve without result).
 
-#### `static async checkAudioPermission()` (iOS; Android)
+#### `static async getAudioPermissionStatus()` (iOS; Android)
 
 Exposes the native API for checking if the device has authorized access to the microphone. Can be called before video capturing to ensure proper UX.  Resolves with `Camera.constants.PermissionStatus.authorized` if access is authorized, `Camera.constants.PermissionStatus.denied` if access is denied or `Camera.constants.PermissionStatus.notDetermined` if permission is still undetermined.
 
