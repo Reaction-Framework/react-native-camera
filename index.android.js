@@ -10,7 +10,12 @@ const CameraNativeModule = NativeModules.IONCameraModule;
 const constants = {
     Aspect: CameraNativeModule.Aspect,
     Type: CameraNativeModule.Type,
-    CaptureTarget: CameraNativeModule.CaptureTarget
+    CaptureTarget: CameraNativeModule.CaptureTarget,
+    PermissionStatus: {
+        notDetermined: 0,
+        authorized: 1,
+        denied: -1
+    }
 };
 
 const CAMERA_REF = 'camera';
@@ -95,9 +100,9 @@ const styles = StyleSheet.create({
 });
 
 CameraView.constants = constants;
-CameraView.checkVideoPermission = async () => null;
+CameraView.getVideoPermissionStatus = async () => constants.PermissionStatus.authorized;
 CameraView.requestVideoPermission = async () => null;
-CameraView.checkAudioPermission = async () => null;
+CameraView.getAudioPermissionStatus = async () => constants.PermissionStatus.authorized;
 CameraView.requestAudioPermission = async () => null;
 
 export default CameraView;

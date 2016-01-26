@@ -4,45 +4,51 @@
 @class RCTIONCameraView;
 
 typedef NS_ENUM(NSInteger, RCTIONCameraAspect) {
-  RCTIONCameraAspectFill = 0,
-  RCTIONCameraAspectFit = 1,
-  RCTIONCameraAspectStretch = 2
+    RCTIONCameraAspectFill = 0,
+    RCTIONCameraAspectFit = 1,
+    RCTIONCameraAspectStretch = 2
 };
 
 typedef NS_ENUM(NSInteger, RCTIONCameraCaptureMode) {
-  RCTIONCameraCaptureModeStill = 0,
-  RCTIONCameraCaptureModeVideo = 1
+    RCTIONCameraCaptureModeStill = 0,
+    RCTIONCameraCaptureModeVideo = 1
 };
 
 typedef NS_ENUM(NSInteger, RCTIONCameraCaptureTarget) {
-  RCTIONCameraCaptureTargetMemory = 0,
-  RCTIONCameraCaptureTargetDisk = 1,
-  RCTIONCameraCaptureTargetCameraRoll = 2
+    RCTIONCameraCaptureTargetMemory = 0,
+    RCTIONCameraCaptureTargetDisk = 1,
+    RCTIONCameraCaptureTargetCameraRoll = 2
 };
 
 typedef NS_ENUM(NSInteger, RCTIONCameraOrientation) {
-  RCTIONCameraOrientationAuto = 0,
-  RCTIONCameraOrientationLandscapeLeft = AVCaptureVideoOrientationLandscapeLeft,
-  RCTIONCameraOrientationLandscapeRight = AVCaptureVideoOrientationLandscapeRight,
-  RCTIONCameraOrientationPortrait = AVCaptureVideoOrientationPortrait,
-  RCTIONCameraOrientationPortraitUpsideDown = AVCaptureVideoOrientationPortraitUpsideDown
+    RCTIONCameraOrientationAuto = 0,
+    RCTIONCameraOrientationLandscapeLeft = AVCaptureVideoOrientationLandscapeLeft,
+    RCTIONCameraOrientationLandscapeRight = AVCaptureVideoOrientationLandscapeRight,
+    RCTIONCameraOrientationPortrait = AVCaptureVideoOrientationPortrait,
+    RCTIONCameraOrientationPortraitUpsideDown = AVCaptureVideoOrientationPortraitUpsideDown
 };
 
 typedef NS_ENUM(NSInteger, RCTIONCameraType) {
-  RCTIONCameraTypeFront = AVCaptureDevicePositionFront,
-  RCTIONCameraTypeBack = AVCaptureDevicePositionBack
+    RCTIONCameraTypeFront = AVCaptureDevicePositionFront,
+    RCTIONCameraTypeBack = AVCaptureDevicePositionBack
 };
 
 typedef NS_ENUM(NSInteger, RCTIONCameraFlashMode) {
-  RCTIONCameraFlashModeOff = AVCaptureFlashModeOff,
-  RCTIONCameraFlashModeOn = AVCaptureFlashModeOn,
-  RCTIONCameraFlashModeAuto = AVCaptureFlashModeAuto
+    RCTIONCameraFlashModeOff = AVCaptureFlashModeOff,
+    RCTIONCameraFlashModeOn = AVCaptureFlashModeOn,
+    RCTIONCameraFlashModeAuto = AVCaptureFlashModeAuto
 };
 
 typedef NS_ENUM(NSInteger, RCTIONCameraTorchMode) {
-  RCTIONCameraTorchModeOff = AVCaptureTorchModeOff,
-  RCTIONCameraTorchModeOn = AVCaptureTorchModeOn,
-  RCTIONCameraTorchModeAuto = AVCaptureTorchModeAuto
+    RCTIONCameraTorchModeOff = AVCaptureTorchModeOff,
+    RCTIONCameraTorchModeOn = AVCaptureTorchModeOn,
+    RCTIONCameraTorchModeAuto = AVCaptureTorchModeAuto
+};
+
+typedef NS_ENUM(NSInteger, RCTIONCameraPermission) {
+    RCTIONCameraPermissionNotDetermined = 0,
+    RCTIONCameraPermissionAuthorized = 1,
+    RCTIONCameraPermissionDenied = -1
 };
 
 @interface RCTIONCameraManager : RCTViewManager<AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate>
@@ -76,14 +82,14 @@ typedef NS_ENUM(NSInteger, RCTIONCameraTorchMode) {
 - (void)zoom:(CGFloat)velocity reactTag:(NSNumber *)reactTag;
 
 
-- (void)checkVideoPermission:(RCTPromiseResolveBlock)resolve
-                    rejecter:(RCTPromiseRejectBlock)reject;
+- (void)getVideoPermissionStatus:(RCTPromiseResolveBlock)resolve
+                        rejecter:(RCTPromiseRejectBlock)reject;
 
 - (void)requestVideoPermission:(RCTPromiseResolveBlock)resolve
                       rejecter:(RCTPromiseRejectBlock)reject;
 
-- (void)checkAudioPermission:(RCTPromiseResolveBlock)resolve
-                    rejecter:(RCTPromiseRejectBlock)reject;
+- (void)getAudioPermissionStatus:(RCTPromiseResolveBlock)resolve
+                        rejecter:(RCTPromiseRejectBlock)reject;
 
 - (void)requestAudioPermission:(RCTPromiseResolveBlock)resolve
                       rejecter:(RCTPromiseRejectBlock)reject;

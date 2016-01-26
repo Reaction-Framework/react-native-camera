@@ -15,7 +15,8 @@ const constants = {
     CaptureTarget: CameraNativeModule.CaptureTarget,
     Orientation: CameraNativeModule.Orientation,
     FlashMode: CameraNativeModule.FlashMode,
-    TorchMode: CameraNativeModule.TorchMode
+    TorchMode: CameraNativeModule.TorchMode,
+    PermissionStatus: CameraNativeModule.PermissionStatus
 };
 
 const CAMERA_REF = 'camera';
@@ -190,9 +191,9 @@ const styles = StyleSheet.create({
 });
 
 CameraView.constants = constants;
-CameraView.checkVideoPermission = CameraNativeModule.checkVideoPermission
+CameraView.getVideoPermissionStatus = CameraNativeModule.getVideoPermissionStatus
 CameraView.requestVideoPermission = CameraNativeModule.requestVideoPermission
-CameraView.checkAudioPermission = CameraNativeModule.checkAudioPermission
+CameraView.getAudioPermissionStatus = CameraNativeModule.getAudioPermissionStatus
 CameraView.requestAudioPermission = CameraNativeModule.requestAudioPermission
 
 module.exports = CameraView;

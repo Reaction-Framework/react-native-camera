@@ -84,6 +84,11 @@ RCT_EXPORT_VIEW_PROPERTY(torchMode, NSInteger);
                      @"off": @(RCTIONCameraTorchModeOff),
                      @"on": @(RCTIONCameraTorchModeOn),
                      @"auto": @(RCTIONCameraTorchModeAuto)
+                     },
+             @"PermissionStatus": @{
+                     @"notDetermined": @(RCTIONCameraPermissionNotDetermined),
+                     @"authorized": @(RCTIONCameraPermissionAuthorized),
+                     @"denied": @(RCTIONCameraPermissionDenied)
                      }
              };
 }
@@ -671,17 +676,22 @@ monitorSubjectAreaChange:(BOOL)monitorSubjectAreaChange {
     }
 }
 
-RCT_EXPORT_METHOD(checkVideoPermission:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(getVideoPermissionStatus:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     @try {
         AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-        if(authStatus != AVAuthorizationStatusAuthorized) {
-            @throw [NSException exceptionWithName:NSGenericException
-                                           reason:@"Video access not permitted."
-                                         userInfo:nil];
+        
+        if(authStatus == AVAuthorizationStatusNotDetermined){
+            resolve([NSNumber numberWithInt:RCTIONCameraPermissionNotDetermined]);
+            return;
         }
         
-        resolve(nil);
+        if(authStatus == AVAuthorizationStatusAuthorized) {
+            resolve([NSNumber numberWithInt:RCTIONCameraPermissionAuthorized]);
+            return;
+        }
+        
+        resolve([NSNumber numberWithInt:RCTIONCameraPermissionDenied]);
     }
     @catch (NSException *exception) {
         [self reject:reject withException:exception];
@@ -705,17 +715,22 @@ RCT_EXPORT_METHOD(requestVideoPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
-RCT_EXPORT_METHOD(checkAudioPermission:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(getAudioPermissionStatus:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     @try {
         AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
-        if(authStatus != AVAuthorizationStatusAuthorized) {
-            @throw [NSException exceptionWithName:NSGenericException
-                                           reason:@"Audio access not permitted."
-                                         userInfo:nil];
+        
+        if(authStatus == AVAuthorizationStatusNotDetermined){
+            resolve([NSNumber numberWithInt:RCTIONCameraPermissionNotDetermined]);
+            return;
         }
         
-        resolve(nil);
+        if(authStatus == AVAuthorizationStatusAuthorized) {
+            resolve([NSNumber numberWithInt:RCTIONCameraPermissionAuthorized]);
+            return;
+        }
+        
+        resolve([NSNumber numberWithInt:RCTIONCameraPermissionDenied]);
     }
     @catch (NSException *exception) {
         [self reject:reject withException:exception];
