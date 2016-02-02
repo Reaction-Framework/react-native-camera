@@ -322,5 +322,5 @@ Thanks to [@lwansbrough](https://github.com/lwansbrough) for original module and
 ## Roadmap
 1. Android / iOS
         * Implement picture/video capturing to temp/cache dir
-1. Android
+2. Android
 	* Add all missing features implemented on iOS
