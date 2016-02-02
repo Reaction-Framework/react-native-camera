@@ -160,8 +160,24 @@ RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL);
 #if TARGET_IPHONE_SIMULATOR
         CGSize size = CGSizeMake(720, 1280);
         UIGraphicsBeginImageContextWithOptions(size, YES, 0);
-        [[UIColor whiteColor] setFill];
+        
+        // Thanks https://gist.github.com/kylefox/1689973
+        CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
+        CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
+        CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
+        UIColor *color = [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
+        [color setFill];
         UIRectFill(CGRectMake(0, 0, size.width, size.height));
+        NSDate *currentDate = [NSDate date];
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"dd.MM.YY HH:mm:ss"];
+        NSString *text = [dateFormatter stringFromDate:currentDate];
+        UIFont *font = [UIFont systemFontOfSize:40.0];
+        NSDictionary *attributes = [NSDictionary dictionaryWithObjects:
+                                    @[font, [UIColor blackColor]]
+                                                               forKeys:
+                                    @[NSFontAttributeName, NSForegroundColorAttributeName]];
+        [text drawAtPoint:CGPointMake(size.width/3, size.height/2) withAttributes:attributes];
         UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
@@ -425,22 +441,22 @@ didOutputMetadataObjects:(NSArray *)metadataObjects
     for (AVMetadataMachineReadableCodeObject *metadata in metadataObjects) {
         for (id barcodeType in [self getBarCodeTypes]) {
             if (metadata.type == barcodeType) {
+                NSDictionary *event = @{
+                                        @"type": metadata.type,
+                                        @"data": metadata.stringValue,
+                                        @"bounds": @{
+                                                @"origin": @{
+                                                        @"x": [NSString stringWithFormat:@"%f", metadata.bounds.origin.x],
+                                                        @"y": [NSString stringWithFormat:@"%f", metadata.bounds.origin.y]
+                                                        },
+                                                @"size": @{
+                                                        @"height": [NSString stringWithFormat:@"%f", metadata.bounds.size.height],
+                                                        @"width": [NSString stringWithFormat:@"%f", metadata.bounds.size.width],
+                                                        }
+                                                }
+                                        };
                 
-                [self.bridge.eventDispatcher sendDeviceEventWithName:@"CameraBarCodeRead"
-                                                                body:@{
-                                                                       @"type": metadata.type,
-                                                                       @"data": metadata.stringValue,
-                                                                       @"bounds": @{
-                                                                               @"origin": @{
-                                                                                       @"x": [NSString stringWithFormat:@"%f", metadata.bounds.origin.x],
-                                                                                       @"y": [NSString stringWithFormat:@"%f", metadata.bounds.origin.y]
-                                                                                       },
-                                                                               @"size": @{
-                                                                                       @"height": [NSString stringWithFormat:@"%f", metadata.bounds.size.height],
-                                                                                       @"width": [NSString stringWithFormat:@"%f", metadata.bounds.size.width],
-                                                                                       }
-                                                                               }
-                                                                       }];
+                [self.bridge.eventDispatcher sendAppEventWithName:@"CameraBarCodeRead" body:event];
             }
         }
     }
