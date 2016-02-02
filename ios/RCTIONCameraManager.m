@@ -148,7 +148,8 @@ RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL);
 
 - (void)reject:(RCTPromiseRejectBlock)reject
    withMessage:(NSString *)message {
-    reject(RCTErrorWithMessage(message));
+    NSError *error = RCTErrorWithMessage(message);
+    reject([NSString stringWithFormat:@"%ld", error.code], error.localizedDescription, error);
 }
 
 - (void)captureStill:(NSInteger)target

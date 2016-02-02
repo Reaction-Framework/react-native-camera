@@ -1,9 +1,9 @@
 package io.reactionframework.android.react.camera;
 
 import android.util.Log;
-import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 public class CameraViewManager extends ViewGroupManager<CameraView> {
     private static final String LOG_TAG = CameraViewManager.class.getSimpleName();
