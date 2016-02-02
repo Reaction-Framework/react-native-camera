@@ -320,5 +320,7 @@ This component supports subviews on iOS and Android, so if you wish to use the c
 Thanks to [@lwansbrough](https://github.com/lwansbrough) for original module and to [@timmh](https://github.com/timmh) on first Android implementation. Some credits goes to [@boxme](https://github.com/boxme) and to [SquareCamera](https://github.com/boxme/SquareCamera) library for Android.
 
 ## Roadmap
-1. Android
+1. Android / iOS
+	* Implement picture/video capturing to temp/cache dir
+2. Android
 	* Add all missing features implemented on iOS
